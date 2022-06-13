@@ -1,9 +1,11 @@
 let url ="http://localhost:3000/api/products";
 
+
 fetch(url)
     .then((response) => 
         response.json()
             .then((data) => { /*Search all items in the API and get promise*/
+                console.table(data);
                 for (let eltData of data){ 
                     var part = document.getElementById("items");
                     var templt = part.children[0].cloneNode(true);
