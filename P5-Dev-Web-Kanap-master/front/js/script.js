@@ -23,4 +23,3 @@ fetch(url)
     .catch((error) => console.log("Pas de réponse de l'API"))
 );
 
-
