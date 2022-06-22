@@ -3,14 +3,14 @@ const params = new URLSearchParams(document.location.search);
 const id = params.get("id");
 console.log(id); /*Affichage de l'id de la page*/
 
-let url ="http://localhost:3000/api/products";
+const url ="http://localhost:3000/api/products";
 
 /*On récupère les données de l'API et on appel la fonction pour afficher les détails*/
 fetch(url)
     .then((response) => 
         response.json())
-            .then((produits) => { 
-                affichageProduit(produits);
+            .then((products) => { 
+                displayProduct(products);
             })
     .catch((error) => console.log("Pas de réponse de l'API"));
 
@@ -19,10 +19,10 @@ fetch(url)
 let article ={};
 
 article.id = id; //id du produit
-
+console.log(article)
 
 /*Fonction servant à afficher le produit en fonction de son ID*/
-function affichageProduit(canap) {
+function displayProduct(canap) {
     /*Déclaration des variable pour l'affichage*/
     let image = document.querySelector("article div.item__img");
     let title = document.querySelector('#title');
@@ -96,11 +96,11 @@ clic.addEventListener('click', () => {
 
 //Création des tableaux sui serviront à ajouter les produits 
 
-//Création d'un tableau qui sauvegardera les données acquise et permettra de les transformé en JSON
+//Création d'un tableau qui permettra d'initialiser le premier tableau
 let additionArticle = [];
-// Création d'un tableau qui seraa ce qu'on récupère du localStorage
+// Création d'un tableau qui sera ce qu'on récupère du localStorage et qui sera converti en JSON
 let productsSave = [];
-//Création d'un tableau pour ajouter d'autre produit
+//Création d'un tableau pour ajouter d'autre produit si le panier n'est pas vide
 let otherProducts = [];
 //Création d'un tableau qui permettra de concaténer otherProducts et  productsSave
 let insertElement = [];
@@ -112,28 +112,28 @@ function additionAllArticles() {
     if (productsSave === null) {
     //on rajoute les éléments dans le tableaux qu'on vient ensuite transformer en JSON
     additionArticle.push(article);
-    console.log(additionArticle);
+    console.log(article);
     //On envoie les élément de la classe 'article' dans le local storage sous JSON nomé 'stock'
-    return (localStorage.stock = JSON.stringify(additionArticle));
+    return (localStorage.setItem("stock", JSON.stringify(additionArticle)));
     }
-};
-
-//La fonction insertOthersProducts va permettre d'ajouter d'autre produit si le panier n'est pas vide
-function insertOthersProducts() {
+    else {
+    //Sinon on injecte les éléments à la suite du premier.
     //On initialise le tableaux en le vidant des éléments pouvant déjà être présent
     insertElement = [];
     //On va tous simplement rajouter les élément de 'article' dans le JSON nomé 'stock'
     otherProducts.push(article);
-    //On concatène insertElement et otherProducts
+    //On concatène les éléments présents dans producsSave et otherProducts ce qui permet de rajouter les éléments au fur et à mesure
     insertElement = [...productsSave, ...otherProducts];
-    //on réinitialise otherProducts cu qu'il a été utilisé
+    //on réinitialise otherProducts vu qu'il a été utilisé
     otherProducts = [];
     //Il n'y à plus qu'a envoyé dans le local storage
-    return (localStorage.stock = JSON.stringify(insertElement));
-
+    return (localStorage.setItem("stock", JSON.stringify(insertElement)));
+    }
 };
 
-//fonction qui permet d'ajouter les élément dans le local storage, et de vérifier si il y des doublons sur la même commande, si il n'y a pas de produit créer le tableaux ou le rajoute.
+
+
+//fonction qui permet d'ajouter les élément dans le local storage, et de vérifier si il y des doublons sur la même commande, si il n'y a pas de produit créer le tableaux ou rajoute le produit dans le tableau déjà existant.
 function store() {
     //définition du local storage qui aurra comme variable 'stock' qui sera quelles sont les valeurs récupéré sous forme de JSON
     productsSave = JSON.parse(localStorage.getItem("stock"));
@@ -142,14 +142,12 @@ function store() {
     if (productsSave){
         for (let choice of productsSave){
             //vérification que l'id et la couleur du produit ne sont pas déjà présent dans 'productsSave
-            if (choice.id === id && choice.couleur === article.color){
+            if (choice.id === id && choice.color === article.color){
                 //On joue une alerte pour que l'utilisateur fasse les modifications directement dans le panier
                 alert ("Vous avez déjà choisie cet article. Vous pouvez modifier ca quantité directement dans le panier")
             }
         }
-        //On ajoute le produits dans le tableau si il existe.
-        return insertOthersProducts;
     }
     //Sinon on créé un nouveaux tableaux
-    return additionAllArticles
+    return additionAllArticles();
 };
