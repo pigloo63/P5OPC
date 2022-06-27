@@ -11,15 +11,15 @@ fetch(url)
  * @brief Affiche l'élément passé en paramètre
  * @param {*} products le produit affiché, si nul ne fait rien
  */
-function displayProduct(product) 
+function displayProduct(product)
 {
     if (!product)
         return
   
     document.querySelector("article div.item__img").innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}">`;
-    document.querySelector('#title').textContent = `${product.name}`;
-    document.querySelector('#price').textContent = `${product.price}`;
-    document.querySelector('#description').textContent = `${product.description}`;
+    document.getElementById('title').textContent = `${product.name}`;
+    document.getElementById('price').textContent = `${product.price}`;
+    document.getElementById('description').textContent = `${product.description}`;
 
     let colorChoose = document.querySelector('#colors');
     for (color of product.colors){
@@ -36,11 +36,16 @@ function retrieveArticle() {
         id : params.get("id"),
         number : document.querySelector("input[id=quantity]").value,
         color : document.getElementById("colors").value,
+        price : document.getElementById('price').textContent,
+        image : document.querySelector("article div.item__img img").src,
+        name : document.getElementById('title').textContent,
+        description : document.getElementById('description').textContent,
     }
 }
 
 document.querySelector("button[id=addToCart]").addEventListener('click', () => {
     let article = retrieveArticle()
+    console.log (article)
     if (article.number > 0 && article.color != undefined) {
         store(article);
         console.log("clic ok")
