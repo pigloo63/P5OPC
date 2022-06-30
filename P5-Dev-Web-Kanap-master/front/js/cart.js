@@ -12,19 +12,16 @@ function displayStore()
   let totalQuantity = 0;
 
   let products = JSON.parse(localStorage.getItem("stock"))
-  for (element of products) {
-    totalPrice = parseInt(element.price);
+  for (element of products){
     totalQuantity += parseInt(element.number)
     display(element)
   }
-
   document.getElementById("totalQuantity").textContent = totalQuantity;
-  document.getElementById("totalPrice").textContent = totalPrice;
   
   }
 
 /**
- * @brief Affiche les éléments 
+ * @brief Affiche les éléments, ajoute ou supprime les éléments, calcul le total
  * @param {*} element 
  */
 function display(element) 
@@ -59,6 +56,8 @@ function display(element)
   parent.lastChild.querySelector('input[name=itemQuantity]').addEventListener('change', (newNumber) => quantityChange(element.id, newNumber))
   
   parent.lastChild.querySelector(".cart__item .deleteItem").addEventListener('click', () => deleteArticle(element.id))
+
+  total()
 }
 
 /**
@@ -73,6 +72,7 @@ function quantityChange(id, newNumber)
     productFound.number = newNumber.target.value
     localStorage.stock = JSON.stringify(products)
   }
+  return location.reload();
 }
 
 /**
@@ -93,5 +93,20 @@ function deleteArticle(id)
     }
   }
   return location.reload();
+}
+
+/**
+ * @brief calcul du total
+ */
+function total()
+{
+  let products = JSON.parse(localStorage.getItem("stock"));
+  let sum = 0;
+  for(i = 0; i < products.length; i++){
+    let multiplyPriceProduct = products[i].price * products[i].number - products[i].price
+    sum += parseInt(products[i].price) + multiplyPriceProduct
+    console.log(sum)
+    document.getElementById("totalPrice").textContent = sum;
+  }
 }
 
