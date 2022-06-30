@@ -1,3 +1,5 @@
+const page = document.location.href;
+
 (() => {
   displayStore()
 })()
@@ -6,17 +8,18 @@
  */
 function displayStore()
 {
-    let totalPrice = 0;
-    let totalQuantity = 0;
+  let totalPrice = 0;
+  let totalQuantity = 0;
 
-    let products = JSON.parse(localStorage.getItem("stock"))
-    for (element of products) {
-      totalPrice += parseInt(element.price);
-      totalQuantity += parseInt(element.number)
-      display(element)
-    }
-    document.getElementById("totalQuantity").textContent = totalQuantity;
-    document.getElementById("totalPrice").textContent = totalPrice;
+  let products = JSON.parse(localStorage.getItem("stock"))
+  for (element of products) {
+    totalPrice = parseInt(element.price);
+    totalQuantity += parseInt(element.number)
+    display(element)
+  }
+
+  document.getElementById("totalQuantity").textContent = totalQuantity;
+  document.getElementById("totalPrice").textContent = totalPrice;
   
   }
 
@@ -26,9 +29,9 @@ function displayStore()
  */
 function display(element) 
 {
-  let modifyText = document.getElementById("cart__items")
 
-  modifyText.innerHTML += 
+  let replaceElement = document.createElement('div')
+  replaceElement.innerHTML =
   `<article class="cart__item" data-id="${element.id}" data-color="${element.color}">
   <div class="cart__item__img">
     <img src="${element.image}" alt="${element.altTxt}">
@@ -50,16 +53,45 @@ function display(element)
     </div>
   </div>
   </article>`
+  
+  let parent = document.getElementById("cart__items")
+  parent.appendChild(replaceElement.firstChild)
+  parent.lastChild.querySelector('input[name=itemQuantity]').addEventListener('change', (newNumber) => quantityChange(element.id, newNumber))
+  
+  parent.lastChild.querySelector(".cart__item .deleteItem").addEventListener('click', () => deleteArticle(element.id))
 }
 
-
-
-function quantityChange() 
+/**
+ * @brief Ajoute un élément de celui désiré dans le localStorage
+ * @params id, newNumber id de l'élément et le nouveau nombre à prendre en compte
+ */
+function quantityChange(id, newNumber) 
 {
-  document.querySelector('input[class=itemQuantity]').addEventListener('change', (modify) => {
-    if(modify > element.number){
-      let modifyNumber = modify.target.value;
-      let productChange = JSON.parse(localStorage.getItem('stock'))
-    }
-  })
+  let products = JSON.parse(localStorage.getItem("stock"))
+  let productFound = products.find(e => e.id == id)
+  if(productFound){
+    productFound.number = newNumber.target.value
+    localStorage.stock = JSON.stringify(products)
+  }
 }
+
+/**
+ * @brief Supprime l'élément voulue
+ * @return Recharge la page lorsque l'élément a été supprimé
+ * @params id de l'élément
+ */
+function deleteArticle(id)
+{
+  let products = JSON.parse(localStorage.getItem("stock"));
+  let productFound = products.find(e => e.id == id);
+  if(productFound){
+    for(i = 0; i < products.length; i++){
+      if(products[i].id == id){
+        products.splice([i], 1)
+        localStorage.stock = JSON.stringify(products)
+      }
+    }
+  }
+  return location.reload();
+}
+
