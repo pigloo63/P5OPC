@@ -1,4 +1,5 @@
 const params = new URLSearchParams(document.location.search);
+console.log(params);
 
 const url ="http://localhost:3000/api/products";
 
@@ -51,7 +52,7 @@ document.querySelector("button[id=addToCart]").addEventListener('click', () => {
         console.log("clic ok")
     }
     else {
-        alert ('Veuillez remplir la couleur et le nombre de canapé désiré')
+        alert ('Veuillez remplir la couleur et le nombre de canapé désiré et/ou vous ne pouvez pas commander plus de 100 canapés')
     }
 });
 
@@ -67,14 +68,19 @@ function store(article)
     if (productsSave) {
         let product = productsSave.find(e => e.id == article.id && e.color == article.color)
 
-        if (product)
+        if (product){
             product.number = parseInt(article.number) + parseInt(product.number)
-        else
-            productsSave.push(article)
+            alert('Le produit à bien été ajouté');
+        }
+        else{
+            productsSave.push(article);
+            alert('Le produit à bien été ajouté');
+        }
     }
     else {
        productsSave=[article];
+       alert('Le produit à bien été ajouté');
     }
-    
+
     localStorage.setItem("stock", JSON.stringify(productsSave));
 };
