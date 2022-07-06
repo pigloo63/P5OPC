@@ -1,3 +1,5 @@
+const page = document.location.href;
+
 (() => {
   displayStore();
   checkAndRetrieveFromUrl();
@@ -102,9 +104,49 @@ function total()
   }
 }
 
+
 /**
- * 
- * @returns 
+* @brief permet l'affichage des élément au fur et à mesure du remplissage du champ
+* @param {*} regex regex qui servira pour la vérification des caractères
+* @param {*} pointage zone ou les élements devront être inséré
+* @param {*} zoneEcoute 
+*/
+function textInformation (regex, pointage, zoneEcoute)
+{
+zoneEcoute.addEventListener('input', (e) => {
+  valeur = e.target.value;
+  index = valeur.search(regex);
+  if(valeur === "" && index != 0){
+    document.querySelector(pointage).textContent = "Veuillez renseigner ce champ"
+    document.querySelector(pointage).style.color = "white"
+  } else if (valeur !== "" && index != 0){
+    document.querySelector(pointage).textContent = "reformuler cette donnée"
+    document.querySelector(pointage).style.color = "white"
+  } else{
+    document.querySelector(pointage).textContent = "Champ accepté"
+    document.querySelector(pointage).style.color = "white"
+  }
+})
+}
+
+var regexText = /^[A-Za-z]{1,60}$/;
+var regexAddress = /^[\w-\s]{1,100}$/;
+var regexEmail = /^[\w.-]+@[\w-.]+.\w{2,4}$/
+
+let firstName = document.getElementById('firstName');
+let lastName = document.getElementById('lastName');
+let address = document.getElementById('address');
+let city = document.getElementById('city');
+let email = document.getElementById('email')
+
+textInformation(regexText, '#firstNameErrorMsg', firstName)
+textInformation(regexText, '#lastNameErrorMsg', lastName)
+textInformation(regexAddress, '#addressErrorMsg', address)
+textInformation(regexText, '#cityErrorMsg', city)
+textInformation(regexEmail, '#emailErrorMsg', email)
+
+/**
+ * @brief check si les url demandés sont présentent, vérifie si leur contenue est correctement écrit et les insert dans un JSON nomé 'contact'
  */
 function checkAndRetrieveFromUrl()
 {
@@ -131,10 +173,10 @@ function checkAndRetrieveFromUrl()
 
   let isContactValid = {};
 
-  isContactValid['firstName'] = regexText.test(contact.firstName); 
-  isContactValid['lastName'] =  regexText.test(contact.lastName);
-  isContactValid['address'] =  regexAddress.test(contact.address); 
-  isContactValid['city'] =  regexText.test(contact.city);
+  isContactValid['Prénom '] = regexText.test(contact.firstName); 
+  isContactValid['Nom'] =  regexText.test(contact.lastName);
+  isContactValid['Adresse'] =  regexAddress.test(contact.address); 
+  isContactValid['Ville'] =  regexText.test(contact.city);
   isContactValid['email'] = regexEmail.test(contact.email);
   
   let errorMsg = 'Les valeurs suivantes sont invalides : '
@@ -146,11 +188,60 @@ function checkAndRetrieveFromUrl()
       errorMsg += key + ' '
     }
   }
+
   if(element == false){
     alert(errorMsg)
     return
   }
   console.log('ok')
-
   localStorage.setItem("contact", JSON.stringify(contact));
+  validationAndSend();
+}
+
+/**
+ * 
+ */
+function validationAndSend ()
+{
+  let contact = JSON.parse(localStorage.getItem('contact'));
+   console.log(contact)
+  let productsSave = JSON.parse(localStorage.getItem('stock'));
+  console.log(productsSave)
+  let finalCommand;
+  let idStore = [];
+  if (productsSave && contact) {
+    for(let element of productsSave){
+      idStore.push(element.id);
+    }
+  }
+  finalCommand = {
+    contact:{
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      address: contact.address,
+      city: contact.city,
+      email: contact.email,
+    },
+    products: idStore
+  }
+  console.log(finalCommand)
+  if (idStore.length != 0 && contact != null) {
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(finalCommand),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        window.location.href = `confirmation.html?commande=${data.orderId}`;
+      })
+      .catch(function (err) {
+        console.log(err);
+        alert("erreur");
+      });
+  }
 }
