@@ -129,6 +129,7 @@ zoneEcoute.addEventListener('input', (e) => {
 })
 }
 
+//Vérification des condition d'écriture dans les champs
 var regexText = /^[A-Za-z]{1,60}$/;
 var regexAddress = /^[\w-\s]{1,100}$/;
 var regexEmail = /^[\w.-]+@[\w-.]+.\w{2,4}$/
@@ -146,7 +147,7 @@ textInformation(regexText, '#cityErrorMsg', city)
 textInformation(regexEmail, '#emailErrorMsg', email)
 
 /**
- * @brief check si les url demandés sont présentent, vérifie si leur contenue est correctement écrit et les insert dans un JSON nomé 'contact'
+ * @brief check si les url demandés sont présentent, vérifie si leur contenue est correctement écrit et les insert dans un JSON nommé 'contact' et envoie les données
  */
 function checkAndRetrieveFromUrl()
 {
@@ -193,20 +194,19 @@ function checkAndRetrieveFromUrl()
     alert(errorMsg)
     return
   }
+
   console.log('ok')
   localStorage.setItem("contact", JSON.stringify(contact));
-  validationAndSend();
+  send()
 }
 
 /**
- * 
+ * @brief cherche les id pour les intégrer dans un tableau; ajoute les éléments dans la variable 'finalCommand' pour l'envoyer vers l'API; prend la réponse de l'API pour trouver le n° de commande
  */
-function validationAndSend ()
+function send ()
 {
   let contact = JSON.parse(localStorage.getItem('contact'));
-   console.log(contact)
   let productsSave = JSON.parse(localStorage.getItem('stock'));
-  console.log(productsSave)
   let finalCommand;
   let idStore = [];
   if (productsSave && contact) {
@@ -224,7 +224,8 @@ function validationAndSend ()
     },
     products: idStore
   }
-  console.log(finalCommand)
+  console.log(finalCommand);
+
   if (idStore.length != 0 && contact != null) {
     fetch("http://localhost:3000/api/products/order", {
       method: "POST",
@@ -239,9 +240,6 @@ function validationAndSend ()
         console.log(data)
         window.location.href = `confirmation.html?commande=${data.orderId}`;
       })
-      .catch(function (err) {
-        console.log(err);
-        alert("erreur");
-      });
+      .catch(error => console.log("Pas de réponse de l'API"));
   }
-}
+};
