@@ -190,20 +190,12 @@ function validationForm()
     email : email,
   };
 
-    
+  console.log('ok')
+  localStorage.setItem("contact", JSON.stringify(contact));
 
-  if(contact.firstName.accept != "",
-    contact.lastName.accept != "",
-    contact.city.accept != "",
-    contact.email.accept != "",
-    contact.address.accept != ""
-  ){
-    console.log('ok')
-    localStorage.setItem("contact", JSON.stringify(contact));
-    document.getElementById('order').addEventListener('click', () => {
-      send()
-    })
-  }
+  document.getElementById('order').addEventListener('click', () => {
+    send()
+  })
   
 }
 
