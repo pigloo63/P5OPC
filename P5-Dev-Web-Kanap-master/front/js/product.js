@@ -39,7 +39,6 @@ function retrieveArticle() {
         id : params.get("id"),
         number : document.querySelector("input[id=quantity]").value,
         color : document.getElementById("colors").value,
-        price : document.getElementById('price').textContent,
         image : document.querySelector("article div.item__img img").src,
         name : document.getElementById('title').textContent,
         description : document.getElementById('description').textContent,
@@ -49,7 +48,7 @@ function retrieveArticle() {
 document.querySelector("button[id=addToCart]").addEventListener('click', () => {
     let article = retrieveArticle()
     console.log (article)
-    if (article.number == 0 || article.number > 100 || article.color == undefined) {
+    if (article.number == 0 || article.number > 100 || article.color == "") {
         alert ('Veuillez remplir la couleur et/ou le nombre de canapé désiré et/ou vous ne pouvez pas commander plus de 100 canapés')
     }
     else {
