@@ -146,6 +146,7 @@ zoneEcoute.addEventListener('input', (e) => {
   if(valeur === "" && index != 0){
     document.querySelector(pointage).textContent = "Veuillez renseigner ce champ"
     document.querySelector(pointage).style.color = "white"
+    button.style.display='none'
   } else if (valeur !== "" && index != 0){
     document.querySelector(pointage).textContent = "Reformuler cette donnée"
     document.querySelector(pointage).style.color = "white"
